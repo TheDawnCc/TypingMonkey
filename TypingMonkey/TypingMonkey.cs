@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -16,10 +17,12 @@ namespace TypingMonkey
         //private const string legalCharacters = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890.";
         //private const string legalCharacters = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890,./?;'<>:\"[]{}\\|!@#$%^&*()_+~`=-1234567890";
 
-        public static string legalCharacters = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890,./?;'<>:\"[]{}\\|!@#$%^&*()_+~`=-1234567890";
-
+        //private const string characters = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890,./?;'<>:\"[]{}\\|!@#$%^&*()_+~`=-1234567890";
+        //private List<string> legalCharacters = new List<string>();
 
         static Random random = new Random();
+
+
 
         /// <summary>
         /// <para>The Typing Monkey Generates a random string with the given length.</para>
@@ -29,13 +32,13 @@ namespace TypingMonkey
         /// <returns>Random string</returns>
         public string TypeAway(int size)
         {
-            // TODO:存在优化空间
             StringBuilder builder = new StringBuilder();
-            char ch;
+            string ch;
 
             for (int i = 0; i < size; i++)
             {
-                ch = legalCharacters[random.Next(0, legalCharacters.Length)];
+                //ch = legalCharacters[random.Next(0, legalCharacters.Count)];
+                ch = TypingCharacters.LegalCharacters[random.Next(0, TypingCharacters.LegalCharacters.Count)];
                 builder.Append(ch);
             }
 

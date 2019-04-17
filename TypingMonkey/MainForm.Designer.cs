@@ -107,7 +107,7 @@
             this.toolTipHelp.SetToolTip(this.PopSizeNumUpDown, "The longer your input text the bigger the population should be! \r\nFor 10 characte" +
         "r strings an ideal popualtion is around 2000");
             this.PopSizeNumUpDown.Value = new decimal(new int[] {
-            2500,
+            50000,
             0,
             0,
             0});

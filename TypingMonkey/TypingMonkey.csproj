@@ -114,6 +114,7 @@
     <Compile Include="StringDistanceCalculator.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="TypingCharacters.cs" />
     <Compile Include="TypingMonkey.cs">
       <SubType>Code</SubType>
     </Compile>

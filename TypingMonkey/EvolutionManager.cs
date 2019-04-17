@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -70,16 +71,20 @@ namespace TypingMonkey.Control
         /// <returns>Returns mostFit - null if MAXIMUM number of Iterations has been reached.</returns>
         public IPrey EvolveGeneration()
         {
+            // 按照字符串距离进行排序
             this.population = this.population.OrderBy(each => this.predator.EvaluateFitness(each)).ToList();
+
             IPrey mostFit = null;
 
             if (this.generationsCount < MAX_ITER)
             {
                 // 1. Retain Most Fitbased on Elitism rate - the king of the jungle will survive more generations!
+                // 1. 维持最符合的种群后代
                 int eliteSize = Convert.ToInt32(this.population.Count * ELITISM_RATE);
                 List<IPrey> buffer = this.CopyEliteMembers(this.population.GetRange(0, eliteSize));
 
                 // 2. Mate The rest.
+                // 2. 对剩余的进行遗传变异
                 for (int i = eliteSize; i < this.population.Count; i++)
                 {
                     int activeMateIndex = Dice.Roll(0, this.population.Count - 1);
@@ -92,8 +97,7 @@ namespace TypingMonkey.Control
                 }
 
                 this.population = buffer;
-                // Re-order
-                // TODO:可以用优先级队列优化
+              
                 this.population = this.population.OrderBy(each => this.predator.EvaluateFitness(each)).ToList();
 
                 // Get Most Fit

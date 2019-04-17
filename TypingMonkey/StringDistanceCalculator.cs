@@ -5,6 +5,10 @@ using System.Text;
 
 namespace TypingMonkey.Utility
 {
+    /// <summary>
+    /// <para>计算两个字符串的编辑距离</para>
+    /// <para>(将一个单词转变为另一个单词所需单字符的插入,删除,替换的最小数量)</para>
+    /// </summary>
     static class StringDistanceCalculator
     {
         /// <summary>

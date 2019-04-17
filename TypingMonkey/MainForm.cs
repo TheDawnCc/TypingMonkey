@@ -10,6 +10,7 @@ using System.Resources;
 
 using TypingMonkey.Control;
 using TypingMonkey.Entity;
+using System.Diagnostics;
 
 namespace TypingMonkey
 {
@@ -109,8 +110,13 @@ namespace TypingMonkey
 
             IPrey mostFit = this.evolutionManager.GetMostFit();
 
+            Stopwatch stopwatch = new Stopwatch();
+            
             while ((mostFit != null) && (mostFit.ToString() != this.InputBox.Text))
             {
+                stopwatch.Reset();
+                stopwatch.Start();
+                
                 int generationNo = this.evolutionManager.IterationCount;
                 
                 this.PrintToOutputConsole($"Best: {mostFit.ToString()} ({generationNo})");
@@ -122,6 +128,9 @@ namespace TypingMonkey
 
                 // Necessary Evil!
                 Application.DoEvents();
+
+                stopwatch.Stop();
+                Debug.WriteLine($"OneTime : {stopwatch.Elapsed}");
             }
 
             if (mostFit != null)
