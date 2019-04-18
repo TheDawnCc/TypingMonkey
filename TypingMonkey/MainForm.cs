@@ -106,13 +106,25 @@ namespace TypingMonkey
         private void GuideEvolution()
         {
             // Instatiate Evolution Manager - setup Evolution.
-            this.evolutionManager = new EvolutionManager((int)this.PopSizeNumUpDown.Value, this.InputBox.Text);
+            Stopwatch stopwatch = new Stopwatch();
+            stopwatch.Start();
+
+            string sourceStr = InputBox.Text;
+            sourceStr = sourceStr.Replace("\n", "");
+            sourceStr = sourceStr.Replace("\r", "");
+            sourceStr = sourceStr.Replace("\0", "");
+
+            TypingCharacters.GetCharacterSet(sourceStr);
+
+            this.evolutionManager = new EvolutionManager((int)this.PopSizeNumUpDown.Value, sourceStr);
+
+            stopwatch.Stop();
+            Debug.WriteLine($"Init time is : {stopwatch.Elapsed}");
 
             IPrey mostFit = this.evolutionManager.GetMostFit();
 
-            Stopwatch stopwatch = new Stopwatch();
             
-            while ((mostFit != null) && (mostFit.ToString() != this.InputBox.Text))
+            while ((mostFit != null) && (mostFit.ToString() != sourceStr))
             {
                 stopwatch.Reset();
                 stopwatch.Start();

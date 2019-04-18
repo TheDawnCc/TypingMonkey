@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -9,28 +10,54 @@ namespace TypingMonkey
 {
     static class TypingCharacters
     {
-        private const string characters = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890,./?;'<>:\"[]{}\\|!@#$%^&*()_+~`=-1234567890";
+        private const string defaultStr = " abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890,./?;'<>:\"[]{}\\|!@#$%^&*()_+~`=-1234567890";
+        private static List<string> chineseStr = new List<string>();
 
         static TypingCharacters()
         {
-            for (int i = 0; i < characters.Length; ++i)
+            for (int i = 0; i < defaultStr.Length; ++i)
             {
-                LegalCharacters.Add(characters[i].ToString());
+                LegalCharacters.Add(defaultStr[i].ToString());
             }
 
-            Stopwatch stopwatch = new Stopwatch();
-            stopwatch.Start();
 
             for (int i = 0x4e00; i < 0x9fa5; ++i)
             {
                 byte[] charChinese = BitConverter.GetBytes(i);
-                LegalCharacters.Add(UnicodeEncoding.Unicode.GetString(charChinese).Replace("\0", ""));
+                chineseStr.Add(UnicodeEncoding.Unicode.GetString(charChinese).Replace("\0", ""));
+            }
+        }
+
+        public static void GetCharacterSet(string source)
+        {
+            bool isChinese = false;
+
+            for (int i = 0; i < source.Length; ++i)
+            {
+                if (chineseStr.Contains(source[i].ToString()))
+                {
+                    isChinese = true;
+                    break;
+                }
             }
 
-            stopwatch.Stop();
-            Console.WriteLine($"生成字集时间 : {stopwatch.Elapsed}");
+            if (isChinese)
+            {
+                LegalCharacters.AddRange(chineseStr);
+            }
+            else
+            {
+                LegalCharacters.Clear();
+
+                for (int i = 0; i < defaultStr.Length; ++i)
+                {
+                    LegalCharacters.Add(defaultStr[i].ToString());
+                }
+            }
         }
 
         public static List<string> LegalCharacters { get; } = new List<string>();
+
+        public static Dictionary<string, int> DicCharacters { get; } = new Dictionary<string, int>();
     }
 }

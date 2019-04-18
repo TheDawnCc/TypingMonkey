@@ -53,8 +53,17 @@ namespace TypingMonkey.Control
         
         private void SetupEvolution(int populationSize, string target)
         {
+            target = target.Replace("\r\n", " ");
+            target = target.Replace("\n", " ");
+            target = target.Replace("\r", " ");
+            target = target.Replace("\0", "");
+
             this.target = PreyFactory.CreateEvoStringPrey(target);
             this.predator = PredatorFactory.CreateEvoStringPredator(this.target as EvoString);
+
+            // 判重字典
+            TypingCharacters.DicCharacters.Clear();
+            TypingCharacters.DicCharacters.Add(target, 0);
 
             this.population = new List<IPrey>(populationSize);
 
@@ -72,7 +81,8 @@ namespace TypingMonkey.Control
         public IPrey EvolveGeneration()
         {
             // 按照字符串距离进行排序
-            this.population = this.population.OrderBy(each => this.predator.EvaluateFitness(each)).ToList();
+            this.population = this.population.AsParallel().OrderBy(each => this.predator.EvaluateFitness(each)).ToList();
+
 
             IPrey mostFit = null;
 
@@ -98,7 +108,7 @@ namespace TypingMonkey.Control
 
                 this.population = buffer;
               
-                this.population = this.population.OrderBy(each => this.predator.EvaluateFitness(each)).ToList();
+                this.population = this.population.AsParallel().OrderBy(each => this.predator.EvaluateFitness(each)).ToList();
 
                 // Get Most Fit
                 mostFit = this.population[0];
@@ -129,7 +139,7 @@ namespace TypingMonkey.Control
         public IPrey GetMostFit()
         {
             // Order population by Fitness.
-            this.population = this.population.OrderBy(each => this.predator.EvaluateFitness(each)).ToList();
+            this.population = this.population.AsParallel().OrderBy(each => this.predator.EvaluateFitness(each)).ToList();
 
             return this.population[0];
         }

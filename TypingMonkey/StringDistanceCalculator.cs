@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 
@@ -11,6 +12,8 @@ namespace TypingMonkey.Utility
     /// </summary>
     static class StringDistanceCalculator
     {
+
+        private static readonly object __lock = new object();
         /// <summary>
         /// Calculates Levenshtein distance between strings.
         /// </summary>
@@ -19,7 +22,7 @@ namespace TypingMonkey.Utility
         /// <returns></returns>
         public static Int32 Levenshtein(String a, String b)
         {
-
+            //TODO:需要优化
             if (string.IsNullOrEmpty(a))
             {
                 if (!string.IsNullOrEmpty(b))
@@ -36,6 +39,12 @@ namespace TypingMonkey.Utility
                     return a.Length;
                 }
                 return 0;
+            }
+
+            int value;
+            if (TypingCharacters.DicCharacters.TryGetValue(b, out value))
+            {
+                return value;
             }
 
             Int32 cost;
@@ -65,6 +74,11 @@ namespace TypingMonkey.Utility
                     min3 = d[i - 1, j - 1] + cost;
                     d[i, j] = Math.Min(Math.Min(min1, min2), min3);
                 }
+            }
+
+            lock (__lock)
+            {
+                TypingCharacters.DicCharacters.Add(b, d[d.GetUpperBound(0), d.GetUpperBound(1)]);
             }
 
             return d[d.GetUpperBound(0), d.GetUpperBound(1)];
