@@ -139,7 +139,9 @@ namespace TypingMonkey.Entity
         /// <returns>Diff between chromosomes, if chromosomes are different in lenght the delta adds up.</returns>
         public int Compare(EvoString lookAlike)
         {
-            return StringDistanceCalculator.Levenshtein(this.chromosome, lookAlike.chromosome);
+            //return StringDistanceCalculator.Levenshtein(this.chromosome, lookAlike.chromosome);
+
+            return StringDistanceCalculator.iLevenshtein(this.chromosome, lookAlike.chromosome);
         }
 
         /// <summary>
