@@ -53,10 +53,7 @@ namespace TypingMonkey.Control
         
         private void SetupEvolution(int populationSize, string target)
         {
-            target = target.Replace("\r\n", " ");
-            target = target.Replace("\n", " ");
-            target = target.Replace("\r", " ");
-            target = target.Replace("\0", "");
+            target = StringHelper.ClearRedundantChar(target);
 
             this.target = PreyFactory.CreateEvoStringPrey(target);
             this.predator = PredatorFactory.CreateEvoStringPredator(this.target as EvoString);

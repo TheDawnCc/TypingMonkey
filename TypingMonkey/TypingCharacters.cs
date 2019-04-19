@@ -56,8 +56,14 @@ namespace TypingMonkey
             }
         }
 
+        /// <summary>
+        /// 字符集
+        /// </summary>
         public static List<string> LegalCharacters { get; } = new List<string>();
 
+        /// <summary>
+        /// 判重字典
+        /// </summary>
         public static Dictionary<string, int> DicCharacters { get; } = new Dictionary<string, int>();
     }
 }

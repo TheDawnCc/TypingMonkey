@@ -11,6 +11,8 @@ using System.Resources;
 using TypingMonkey.Control;
 using TypingMonkey.Entity;
 using System.Diagnostics;
+using System.Windows.Threading;
+using System.Threading.Tasks;
 
 namespace TypingMonkey
 {
@@ -18,24 +20,26 @@ namespace TypingMonkey
     /// A Few commonly understood enumerations.
     /// </summary>
     enum InputType
-    { 
+    {
         PopulationSize = 0,
         InputText
     };
 
     enum PreyType
-    { 
+    {
         EvoString = 0
     };
 
     enum PredatorType
-    { 
+    {
         EvoStringPredator = 0
     };
 
 
     public partial class MainForm : Form
     {
+        private Dispatcher dispatcher = Dispatcher.CurrentDispatcher;
+
         /// <summary>
         /// Declare and initialize InputValidator Member.
         /// </summary>
@@ -70,32 +74,35 @@ namespace TypingMonkey
             this.ClearOutputConsole();
             this.PrintToOutputConsole("-- Start Of Process --" + System.Environment.NewLine);
 
-            try
+            Task.Factory.StartNew(() =>
             {
-                // Throws an exception if any problem.
-                this.CheckErrorList(errorList);
+                try
+                {
+                    // Throws an exception if any problem.
+                    this.CheckErrorList(errorList);
 
-                this.PrintToOutputConsole("-- Start Evolution --");
+                    this.PrintToOutputConsole("-- Start Evolution --");
 
-                // Main Bulk of functionality Starts here.
-                this.GuideEvolution();
+                    // Main Bulk of functionality Starts here.
+                    this.GuideEvolution();
 
-                this.PrintToOutputConsole("-- End of Evolution --" + System.Environment.NewLine);
-            }
-            catch (InvalidInputException invalidInputException)
-            {
-                this.PrintToOutputConsole("Validation Error: " + invalidInputException.Message + System.Environment.NewLine);
-            }
-            catch (Exception genericException)
-            {
-                this.PrintToOutputConsole("Generic Error: " + genericException.Message + System.Environment.NewLine);
-            }
-            finally 
-            {
-                this.PrintToOutputConsole("-- End Of Process --");
-                this.ScrollOutputConsoleToEnd();
-                this.EnableUIInput(true);
-            }
+                    this.PrintToOutputConsole("-- End of Evolution --" + System.Environment.NewLine);
+                }
+                catch (InvalidInputException invalidInputException)
+                {
+                    this.PrintToOutputConsole("Validation Error: " + invalidInputException.Message + System.Environment.NewLine);
+                }
+                catch (Exception genericException)
+                {
+                    this.PrintToOutputConsole("Generic Error: " + genericException.Message + System.Environment.NewLine);
+                }
+                finally
+                {
+                    this.PrintToOutputConsole("-- End Of Process --");
+                    this.ScrollOutputConsoleToEnd();
+                    this.EnableUIInput(true);
+                }
+            });
         }
 
         private void PopSizeNumUpDown_ValueChanged(object sender, EventArgs e)
@@ -110,9 +117,7 @@ namespace TypingMonkey
             stopwatch.Start();
 
             string sourceStr = InputBox.Text;
-            sourceStr = sourceStr.Replace("\n", "");
-            sourceStr = sourceStr.Replace("\r", "");
-            sourceStr = sourceStr.Replace("\0", "");
+            sourceStr = StringHelper.ClearRedundantChar(sourceStr);
 
             TypingCharacters.GetCharacterSet(sourceStr);
 
@@ -123,14 +128,14 @@ namespace TypingMonkey
 
             IPrey mostFit = this.evolutionManager.GetMostFit();
 
-            
+
             while ((mostFit != null) && (mostFit.ToString() != sourceStr))
             {
                 stopwatch.Reset();
                 stopwatch.Start();
-                
+
                 int generationNo = this.evolutionManager.IterationCount;
-                
+
                 this.PrintToOutputConsole($"Best: {mostFit.ToString()} ({generationNo})");
 
                 // Evolve next generation.
@@ -163,46 +168,67 @@ namespace TypingMonkey
         /// <param name="errorList"></param>
         private void CheckErrorList(List<Object> errorList)
         {
-            /// Unboxing - from Object (reference type) to bool (value built-in type)
-            bool isPopulationSizeValid = (bool)errorList[(int)InputType.PopulationSize];
-            bool isInputTextLengthValid = (bool)errorList[(int)InputType.InputText];
-
-            string errorMsg = string.Empty;
-
-            /// Throwing specialised exception with custom errorMessage
-            if (!isPopulationSizeValid && !isInputTextLengthValid)
-            { 
-                errorMsg = String.Format("Population Size ({0}-{1}) and Input Text Lenght ({2}-{3}) are invalid", 
-                                         this.validator.MinPopulationSize, this.validator.MaxPopulationSize,
-                                         this.validator.MinInputText, this.validator.MaxInputText);
-
-                throw new InvalidInputException(errorMsg);
-            }
-            else if (!isPopulationSizeValid)
+            if (dispatcher != null)
             {
-                errorMsg = String.Format("Population Size ({0}-{1}) is invalid",
-                                         this.validator.MinPopulationSize, this.validator.MaxPopulationSize);
+                dispatcher.Invoke(new Action(() =>
+                {
 
-                throw new InvalidInputException(errorMsg);
-            }
-            else if (!isInputTextLengthValid)
-            {
-                errorMsg = String.Format("Input Text Lenght ({0}-{1}) is invalid",
-                                         this.validator.MinInputText, this.validator.MaxInputText);
+                    /// Unboxing - from Object (reference type) to bool (value built-in type)
+                    bool isPopulationSizeValid = (bool)errorList[(int)InputType.PopulationSize];
+                    bool isInputTextLengthValid = (bool)errorList[(int)InputType.InputText];
 
-                throw new InvalidInputException(errorMsg);
+                    string errorMsg = string.Empty;
+
+                    /// Throwing specialised exception with custom errorMessage
+                    if (!isPopulationSizeValid && !isInputTextLengthValid)
+                    {
+                        errorMsg = String.Format("Population Size ({0}-{1}) and Input Text Lenght ({2}-{3}) are invalid",
+                                                 this.validator.MinPopulationSize, this.validator.MaxPopulationSize,
+                                                 this.validator.MinInputText, this.validator.MaxInputText);
+
+                        throw new InvalidInputException(errorMsg);
+                    }
+                    else if (!isPopulationSizeValid)
+                    {
+                        errorMsg = String.Format("Population Size ({0}-{1}) is invalid",
+                                                 this.validator.MinPopulationSize, this.validator.MaxPopulationSize);
+
+                        throw new InvalidInputException(errorMsg);
+                    }
+                    else if (!isInputTextLengthValid)
+                    {
+                        errorMsg = String.Format("Input Text Lenght ({0}-{1}) is invalid",
+                                                 this.validator.MinInputText, this.validator.MaxInputText);
+
+                        throw new InvalidInputException(errorMsg);
+                    }
+
+                }));
             }
         }
 
         void ClearOutputConsole()
         {
-            this.OutputBox.Text = string.Empty;
+            if (dispatcher != null)
+            {
+                dispatcher.Invoke(new Action(() =>
+                {
+                    this.OutputBox.Text = string.Empty;
+                }));
+            }
         }
 
         void PrintToOutputConsole(string message)
         {
             string messageLine = message + System.Environment.NewLine;
-            this.OutputBox.Text += messageLine;
+            if (dispatcher != null)
+            {
+                dispatcher.Invoke(new Action(() =>
+                {
+                    //this.OutputBox.Text += messageLine;
+                    this.OutputBox.AppendText(messageLine);
+                }));
+            }
         }
 
         /// <summary>
@@ -210,17 +236,30 @@ namespace TypingMonkey
         /// </summary>
         void ScrollOutputConsoleToEnd()
         {
-            this.OutputBox.SelectionStart = this.OutputBox.Text.Length - 1;
-            this.OutputBox.ScrollToCaret();
+            if (dispatcher != null)
+            {
+                dispatcher.Invoke(new Action(() =>
+                {
+                    this.OutputBox.SelectionStart = this.OutputBox.Text.Length - 1;
+                    this.OutputBox.ScrollToCaret();
+                    
+                }));
+            }
         }
 
         void EnableUIInput(bool enable)
         {
-            this.InputBox.Enabled = enable;
-            this.OutputBox.Enabled = enable;
-            this.PopSizeNumUpDown.Enabled = enable;
-            this.EvolveButton.Enabled = enable;
-            this.toolTipHelp.Active = enable;
+            if (dispatcher != null)
+            {
+                dispatcher.Invoke(new Action(() =>
+                {
+                    this.InputBox.Enabled = enable;
+                    this.OutputBox.Enabled = enable;
+                    this.PopSizeNumUpDown.Enabled = enable;
+                    this.EvolveButton.Enabled = enable;
+                    this.toolTipHelp.Active = enable;
+                }));
+            }
         }
     }
 }

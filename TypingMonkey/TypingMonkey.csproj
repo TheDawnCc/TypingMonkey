@@ -43,6 +43,7 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Windows" />
     <Reference Include="System.Xml.Linq">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
@@ -54,6 +55,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="APrey.cs" />
@@ -114,6 +116,7 @@
     <Compile Include="StringDistanceCalculator.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="StringHelper.cs" />
     <Compile Include="TypingCharacters.cs" />
     <Compile Include="TypingMonkey.cs">
       <SubType>Code</SubType>
