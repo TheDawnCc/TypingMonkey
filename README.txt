@@ -24,3 +24,7 @@ The best way of doing this would be starting a BackgroundWorker thread and perfo
 项目更改过所用的框架是.Net Framework 4.7.2 工具为VS2019
 
 The Application has been edited using C# and the .Net Framework 4.7.2 with the tool is Visual Studio 2019
+
+预览:
+
+![Image](https://github.com/TheDawnCc/TypingMonkey/Preview/GIF.gif)
