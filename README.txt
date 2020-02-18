@@ -27,4 +27,4 @@ The Application has been edited using C# and the .Net Framework 4.7.2 with the t
 
 预览:
 
-![Image](https://github.com/TheDawnCc/TypingMonkey/blob/master/Preview/GIF.gif)
+![image](https://github.com/TheDawnCc/TypingMonkey/blob/master/Preview/GIF.gif)
