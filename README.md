@@ -29,4 +29,4 @@ The Application has been edited using C# and the .Net Framework 4.7.2 with the t
 
 ![image](https://github.com/TheDawnCc/TypingMonkey/blob/master/Preview/Preview.png)
 
-![iamge](https://github.com/TheDawnCc/TypingMonkey/blob/master/Preview/GIF.gif)
+![iamge](https://github.com/TheDawnCc/TypingMonkey/blob/master/Preview/PreviewGif.gif)
